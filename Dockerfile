@@ -1,4 +1,6 @@
-FROM debian:buster
+FROM ubuntu:jammy
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install git, supervisor, VNC, & X11 packages
 RUN set -ex; \
@@ -16,15 +18,26 @@ RUN set -ex; \
 
 # Setup demo environment variables
 ENV HOME=/root \
-    DEBIAN_FRONTEND=noninteractive \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8 \
     LC_ALL=C.UTF-8 \
     DISPLAY=:0.0 \
     DISPLAY_WIDTH=1024 \
     DISPLAY_HEIGHT=768 \
-    RUN_XTERM=yes \
+    RUN_XTERM=no \
     RUN_FLUXBOX=yes
+
+# graphic drivers for testing GPU capabilities inside Docker containers on non-NVIDIA hardware
+RUN apt update \
+    && apt install -y software-properties-common \
+    && add-apt-repository ppa:oibaf/graphics-drivers -y \
+    && apt install -y mesa-utils \
+    && apt upgrade -y \
+    && rm -rf /var/lib/apt/lists/
+
 COPY . /app
+
 CMD ["/app/entrypoint.sh"]
+
 EXPOSE 8080
+EXPOSE 5900
