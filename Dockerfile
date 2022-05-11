@@ -10,6 +10,7 @@ RUN set -ex; \
       fluxbox \
       git \
       net-tools \
+      nginx \
       novnc \
       supervisor \
       x11vnc \
@@ -36,6 +37,8 @@ RUN apt update \
     && rm -rf /var/lib/apt/lists/
 
 COPY . /app
+COPY nginx-default.conf /etc/nginx/conf.d/default.conf
+COPY index.htm /usr/share/novnc/
 
 CMD ["/app/entrypoint.sh"]
 
